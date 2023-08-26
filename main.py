@@ -9,6 +9,9 @@ import requests
 import shutil
 from time import sleep
 from config import data
+from fake_useragent import UserAgent
+
+useragent = UserAgent()
 
 #Получаем переменные из конфига
 email = data['email']
@@ -16,8 +19,9 @@ password = data['password']
 directory = data['directory']
 cookies = data['cookies']
 urlmanga = data['url']
-chrome_driver_path = data['chrome_driver_path']
+chrome_driver_path = directory + "/chromedriver.exe"
 headless = data['headless']
+delay = data['delay']
 
 #Явное ожидание нажатия
 def click(driver, locator):
@@ -50,16 +54,17 @@ def get_manga_image(urlmanga):
     options = webdriver.ChromeOptions()
 
     #Добавляем user agent
-    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36")
+    options.add_argument(f"user-agent={useragent.random}")
     
     options.add_argument("--disable-blink-features=AutomationControlled")
+
+    service = webdriver.chrome.service.Service(chrome_driver_path)
 
     #Скрывать браузер или нет
     if headless == 1:
        options.add_argument("--headless")
 
     #Создание драйвера
-    service = webdriver.chrome.service.Service(chrome_driver_path)
     driver = webdriver.Chrome(service=service, options=options)
     try:
         driver.get("https://mangalib.me/")
@@ -127,7 +132,7 @@ def get_manga_image(urlmanga):
                 
                 #Переходим на следующий фрейм
                 click(driver, (By.XPATH, '//div[@data-p="'+str(page)+'"]'))
-            sleep(2)
+            sleep(delay)
     except Exception as ex:
         print(ex)
     finally:

@@ -4,6 +4,6 @@ data ={
     "directory": "",
     "cookies": "",
     "url": "",
-    "chrome_driver_path": "",
-    "headless": 1
+    "delay": 2,
+    "headless": 0
 }
